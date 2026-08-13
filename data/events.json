@@ -1,26 +1,46 @@
 [
   {
-    "id": "1",
+    "id": "evt-1",
     "title": "Tech Meetup Istanbul",
+    "description": "A community meetup for backend developers to share experiences and network.",
     "venue": "Kolektif House",
-    "time": "2026-09-01T18:00:00",
+    "startsAt": "2026-09-01T18:00:00Z",
     "capacity": 50,
-    "organizerId": "org-1"
+    "priceCents": 0,
+    "organizerId": "org-1",
+    "createdAt": "2026-08-01T10:00:00Z"
   },
   {
-    "id": "2",
+    "id": "evt-2",
     "title": "Startup Pitch Night",
+    "description": "Early-stage founders pitch their ideas to a panel of investors and mentors.",
     "venue": "Impact Hub",
-    "time": "2026-09-10T19:00:00",
+    "startsAt": "2026-09-10T19:00:00Z",
     "capacity": 30,
-    "organizerId": "org-1"
+    "priceCents": 1500,
+    "organizerId": "org-1",
+    "createdAt": "2026-08-02T10:00:00Z"
   },
   {
-    "id": "3",
+    "id": "evt-3",
     "title": "AI & Backend Workshop",
+    "description": "A hands-on workshop covering AI-assisted backend development practices.",
     "venue": "Zorlu Center",
-    "time": "2026-09-15T17:00:00",
+    "startsAt": "2026-09-15T17:00:00Z",
     "capacity": 40,
-    "organizerId": "org-2"
+    "priceCents": 2000,
+    "organizerId": "org-2",
+    "createdAt": "2026-08-03T10:00:00Z"
+  },
+  {
+    "id": "evt-4",
+    "title": "Career Fair: Tech Roles",
+    "description": "Meet recruiters from local tech companies hiring for backend and full-stack roles.",
+    "venue": null,
+    "startsAt": "2026-09-20T12:00:00Z",
+    "capacity": 200,
+    "priceCents": 0,
+    "organizerId": "org-3",
+    "createdAt": "2026-08-04T10:00:00Z"
   }
 ]

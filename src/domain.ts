@@ -12,10 +12,13 @@ export interface User {
 export interface Event {
   id: string;
   title: string;
-  venue: string;
-  time: Date;
+  description: string;
+  venue: string | null;
+  startsAt: string;
   capacity: number;
+  priceCents: number;
   organizerId: string;
+  createdAt: string;
 }
 
 export interface Booking {
@@ -24,6 +27,15 @@ export interface Booking {
   eventId: string;
   status: BookingStatus;
   createdAt: Date;
+}
+
+export interface Venue {
+  id: string;
+  name: string;
+  address: string;
+  capacity: number;
+  contactEmail: string;
+  createdAt: string;
 }
 
 export function findById<T extends { id: string }>(
