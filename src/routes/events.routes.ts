@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { readFile } from "node:fs/promises";
-import type { Event } from "../domain.ts";
+import { findById, type Event } from "../domain.ts";
 
 export const eventsRouter = Router();
 
@@ -24,6 +24,21 @@ eventsRouter.get("/events", async (_req, res) => {
   try {
     const events = await loadEvents();
     res.status(200).json(events);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+eventsRouter.get("/events/:id", async (req, res) => {
+  try {
+    const events = await loadEvents();
+    const event = findById(events, req.params.id);
+    if (!event) {
+      res.status(404).json({ error: "Event not found" });
+      return;
+    }
+    res.status(200).json(event);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Internal server error" });
