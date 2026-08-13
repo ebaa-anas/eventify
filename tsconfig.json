@@ -10,8 +10,7 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "allowImportingTsExtensions": true,
-    "outDir": "dist",
-    "rootDir": "src",
+    "noEmit": true,
     "types": ["node"]
   },
   "include": ["src/**/*.ts"]
