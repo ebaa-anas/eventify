@@ -55,15 +55,32 @@ src/
 
 ```ts
 export class HttpError extends Error {
-  constructor(public status: number, message: string, public details?: unknown) {
+  status: number;
+  details?: unknown;
+
+  constructor(status: number, message: string, details?: unknown) {
     super(message);
     this.name = "HttpError";
+    this.status = status;
+    this.details = details;
   }
-  static badRequest(message: string, details?: unknown) { return new HttpError(400, message, details); }
-  static notFound(message: string) { return new HttpError(404, message); }
-  static conflict(message: string) { return new HttpError(409, message); }
+
+  static badRequest(message: string, details?: unknown): HttpError {
+    return new HttpError(400, message, details);
+  }
+  static notFound(message: string): HttpError {
+    return new HttpError(404, message);
+  }
+  static conflict(message: string): HttpError {
+    return new HttpError(409, message);
+  }
 }
 ```
+
+Note: `tsconfig.json` has `erasableSyntaxOnly: true`, which forbids TS
+constructor parameter properties (they require emitting `this.x = x`
+assignments beyond plain type erasure) — hence fields are declared and
+assigned explicitly above, not via `constructor(public status: number, ...)`.
 
 `src/middleware/errorHandler.ts` is a 4-arg Express error middleware, mounted
 last in `app.ts`:
@@ -131,7 +148,7 @@ export const createVenueSchema = z.object({
   name: z.string().trim().min(1),
   address: z.string().trim().min(1),
   capacity: z.number().int().positive(),
-  contactEmail: z.string().email(),
+  contactEmail: z.email(),
 });
 
 export const updateVenueSchema = createVenueSchema
