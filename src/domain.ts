@@ -12,10 +12,13 @@ export interface User {
 export interface Event {
   id: string;
   title: string;
-  venue: string;
-  time: Date;
+  description: string;
+  venue: string | null;
+  startsAt: string;
   capacity: number;
+  priceCents: number;
   organizerId: string;
+  createdAt: string;
 }
 
 export interface Booking {
