@@ -26,6 +26,15 @@ export interface Booking {
   createdAt: Date;
 }
 
+export interface Venue {
+  id: string;
+  name: string;
+  address: string;
+  capacity: number;
+  contactEmail: string;
+  createdAt: string;
+}
+
 export function findById<T extends { id: string }>(
   rows: T[],
   id: string,
