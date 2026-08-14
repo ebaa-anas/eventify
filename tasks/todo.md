@@ -7,9 +7,9 @@
 
 ## Session 2
 
-- [ ] HW1: /v1/bookings (POST/GET/DELETE) — service handles 404 unknown eventId, 409 duplicate, 409 capacity
-- [ ] HW2: Pagination on GET /v1/events — page/limit + { data, page, limit, total } envelope
-- [ ] HW3: Filtering on GET /v1/events — venue, from/to on startsAt, applied before pagination
-- [ ] HW4: Consistency pass — validate/validateQuery everywhere, one HttpError middleware, no res.status(500)
-- [ ] Stretch (optional): WAITLISTED at capacity, ?sort=startsAt:asc|desc
-- [ ] PR description: what/how to run, AI usage + one bug fixed, exit-ticket answer
+- [x] HW1: /v1/bookings (POST/GET/DELETE) — service handles 404 unknown eventId, 409 duplicate, 409 capacity
+- [x] HW2: Pagination on GET /v1/events — page/limit + { data, page, limit, total } envelope
+- [x] HW3: Filtering on GET /v1/events — venue, from/to on startsAt, applied before pagination
+- [x] HW4: Consistency pass — validate/validateQuery everywhere, one HttpError middleware, no res.status(500)
+- [x] Stretch (optional): WAITLISTED at capacity, ?sort=startsAt:asc|desc
+- [x] PR description: what/how to run, AI usage + one bug fixed
