@@ -1,7 +1,7 @@
 import type { Request, Response } from "express";
 import { createBooking, getBookingById, cancelBooking } from "../services/bookings.service.ts";
 
-const CURRENT_USER_ID = "user-1";
+const CURRENT_USER_ID = "01a01660-dafc-75ea-a430-f0dab85ac5b6";
 
 export async function createBookingHandler(req: Request, res: Response) {
   const booking = await createBooking(req.body.eventId, CURRENT_USER_ID);
