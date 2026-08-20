@@ -38,5 +38,25 @@ export const eventRepository = {
     ]);
   },
 
-  findById: (id: string) => prisma.event.findUnique({ where: { id } }),
+   findById: (id: string) => prisma.event.findUnique({ where: { id } }),
+
+  create: (organizerId: string, data: {
+    title: string;
+    description: string;
+    venue?: string;
+    startsAt: Date;
+    capacity: number;
+    priceCents: number;
+  }) => prisma.event.create({ data: { ...data, organizerId } }),
+
+  update: (id: string, data: Partial<{
+    title: string;
+    description: string;
+    venue: string;
+    startsAt: Date;
+    capacity: number;
+    priceCents: number;
+  }>) => prisma.event.update({ where: { id }, data }),
+
+  remove: (id: string) => prisma.event.delete({ where: { id } }),
 };

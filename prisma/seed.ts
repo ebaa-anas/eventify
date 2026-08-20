@@ -1,6 +1,7 @@
 import "dotenv/config";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../src/generated/prisma/client.ts";
+import { hashPassword } from "../src/security/password.ts";
 
 const adapter = new PrismaPg({
   user: "eventify",
@@ -11,17 +12,30 @@ const adapter = new PrismaPg({
 });
 const prisma = new PrismaClient({ adapter });
 
+// Every seeded account shares this password, for easy local testing.
+const SEED_PASSWORD = "seed-password-12345";
+
 async function main() {
+  const passwordHash = await hashPassword(SEED_PASSWORD);
+
   const organizer = await prisma.user.upsert({
     where: { email: "organizer@example.com" },
     update: {},
-    create: { email: "organizer@example.com", name: "Ahmad Organizer", role: "ORGANIZER" },
+    create: { email: "organizer@example.com", name: "Ahmad Organizer", role: "ORGANIZER", passwordHash },
+  });
+
+  // Second organizer — needed to prove BOLA: organizer2 must NOT be able to
+  // edit/delete organizer's events.
+  const organizer2 = await prisma.user.upsert({
+    where: { email: "organizer2@example.com" },
+    update: {},
+    create: { email: "organizer2@example.com", name: "Layla Organizer", role: "ORGANIZER", passwordHash },
   });
 
   const admin = await prisma.user.upsert({
     where: { email: "admin@example.com" },
     update: {},
-    create: { email: "admin@example.com", name: "Site Admin", role: "ADMIN" },
+    create: { email: "admin@example.com", name: "Site Admin", role: "ADMIN", passwordHash },
   });
 
   const attendees = [];
@@ -29,7 +43,7 @@ async function main() {
     const user = await prisma.user.upsert({
       where: { email: `attendee${i}@example.com` },
       update: {},
-      create: { email: `attendee${i}@example.com`, name: `Attendee ${i}`, role: "ATTENDEE" },
+      create: { email: `attendee${i}@example.com`, name: `Attendee ${i}`, role: "ATTENDEE", passwordHash },
     });
     attendees.push(user);
   }
@@ -82,8 +96,11 @@ async function main() {
   }
 
   console.log("Seed complete.");
+  console.log("Shared password for all seeded accounts:", SEED_PASSWORD);
+  console.log("Organizer 1 (owns all events):", organizer.email);
+  console.log("Organizer 2 (owns nothing — for BOLA test):", organizer2.email);
+  console.log("Admin:", admin.email);
   console.log("Capacity-5 event id:", capacityFiveEvent.id);
-  console.log("Attendee ids:", attendees.map((a) => a.id));
 }
 
 main()

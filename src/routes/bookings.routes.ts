@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { validate } from "../middleware/validate.ts";
+import { requireAuth } from "../middleware/requireAuth.ts";
 import { createBookingSchema } from "../schemas/bookings.schema.ts";
 import {
   createBookingHandler,
@@ -9,6 +10,7 @@ import {
 
 export const bookingsRouter = Router();
 
-bookingsRouter.post("/", validate(createBookingSchema), createBookingHandler);
-bookingsRouter.get("/:id", getBookingHandler);
-bookingsRouter.delete("/:id", cancelBookingHandler);
+// Any authenticated user can book — no role restriction beyond being logged in.
+bookingsRouter.post("/", requireAuth, validate(createBookingSchema), createBookingHandler);
+bookingsRouter.get("/:id", requireAuth, getBookingHandler);
+bookingsRouter.delete("/:id", requireAuth, cancelBookingHandler);

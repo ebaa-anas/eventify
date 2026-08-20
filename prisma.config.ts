@@ -7,7 +7,7 @@ export default defineConfig({
   datasource: {
     url: process.env.DATABASE_URL,
   },
-  migrate: {
+  migrations: {
     seed: `node --experimental-strip-types prisma/seed.ts`,
     adapter: async () => {
       return new PrismaPg({ connectionString: process.env.DATABASE_URL });
