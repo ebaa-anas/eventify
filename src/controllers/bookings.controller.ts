@@ -7,7 +7,7 @@ export async function createBookingHandler(req: Request, res: Response) {
 }
 
 export async function getBookingHandler(req: Request, res: Response) {
-  const booking = await getBookingById(req.params.id as string);
+  const booking = await getBookingById(req.params.id as string, req.user!.sub);
   res.status(200).json(booking);
 }
 
