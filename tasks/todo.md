@@ -33,3 +33,11 @@
 - [x] Task 2: BOLA ownership checks (events + bookings)
 - [x] Task 3: Refresh-token rotation — blocked on session-4-starter
 - [ ] Task 4: AI security audit in PR description
+
+# Session 5 Homework — Tasks
+
+- [x] Waitlist promotion (Option A): full events → WAITLISTED, cancel confirmed → promote via BullMQ worker
+- [x] Cache metrics: hit/miss/ratio logged every 60s or 100 lookups
+- [x] Redis rate limiting on login (per-IP) and bookings (per-user), proven with script
+- [x] Deploy prep: Neon, Upstash, Render accounts ready
+- [x] OpenAPI spec generated with zod-openapi, served at /openapi.json
