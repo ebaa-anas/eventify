@@ -60,18 +60,24 @@ export async function createBooking(eventId: string, userId: string) {
   }
 }
 
-export async function getBookingById(id: string) {
+export async function getBookingById(id: string, userId: string) {
   const booking = await prisma.booking.findUnique({ where: { id } });
   if (!booking) {
     throw new HttpError(404, "Booking not found");
   }
+  if (booking.userId !== userId) {
+    throw HttpError.forbidden("You do not own this booking");
+  }
   return booking;
 }
 
-export async function cancelBooking(id: string) {
+export async function cancelBooking(id: string, userId: string) {
   const booking = await prisma.booking.findUnique({ where: { id } });
   if (!booking) {
     throw new HttpError(404, "Booking not found");
+  }
+  if (booking.userId !== userId) {
+    throw HttpError.forbidden("You do not own this booking");
   }
   return prisma.booking.update({
     where: { id },

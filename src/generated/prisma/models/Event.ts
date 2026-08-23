@@ -509,10 +509,6 @@ export type EventUncheckedUpdateManyWithoutOrganizerNestedInput = {
   deleteMany?: Prisma.EventScalarWhereInput | Prisma.EventScalarWhereInput[]
 }
 
-export type NullableStringFieldUpdateOperationsInput = {
-  set?: string | null
-}
-
 export type IntFieldUpdateOperationsInput = {
   set?: number
   increment?: number

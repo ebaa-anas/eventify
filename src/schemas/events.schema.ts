@@ -10,3 +10,18 @@ export const eventsQuerySchema = z.object({
 });
 
 export type EventsQuery = z.infer<typeof eventsQuerySchema>;
+
+export const createEventSchema = z.strictObject({
+  title: z.string().min(1),
+  description: z.string().min(1),
+  venue: z.string().min(1).optional(),
+  startsAt: z.coerce.date(),
+  capacity: z.number().int().min(1),
+  priceCents: z.number().int().min(0),
+});
+
+export type CreateEventInput = z.infer<typeof createEventSchema>;
+
+export const updateEventSchema = createEventSchema.partial();
+
+export type UpdateEventInput = z.infer<typeof updateEventSchema>;

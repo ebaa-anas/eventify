@@ -24,3 +24,12 @@
 - [x] Task 2: Implement transactional booking (Serializable isolation, capacity check, rebooking flip, P2002 -> 409)
 - [x] Task 3: Write idempotent seed script (organizer, admin, 20 attendees, capacity-5 event)
 - [x] Task 4: Prove index impact with EXPLAIN ANALYZE before/after
+
+
+# Session 4 Homework - Tasks
+
+- [x] passwordHash column + argon2id hashing
+- [x] Task 1: signup/login + requireAuth/requireRole + route matrix
+- [x] Task 2: BOLA ownership checks (events + bookings)
+- [x] Task 3: Refresh-token rotation — blocked on session-4-starter
+- [ ] Task 4: AI security audit in PR description

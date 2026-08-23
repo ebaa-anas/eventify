@@ -20,14 +20,51 @@ enum BookingStatus {
 }
 
 model User {
-  id        String   @id @default(uuid(7)) @db.Uuid
-  email     String   @unique
-  name      String
-  role      Role     @default(ATTENDEE)
-  createdAt DateTime @default(now())
+  id           String   @id @default(uuid(7)) @db.Uuid
+  email        String   @unique
+  name         String
+  passwordHash String
+  role         Role     @default(ATTENDEE)
+  createdAt    DateTime @default(now())
 
-  events    Event[]
-  bookings  Booking[]
+  events         Event[]
+  bookings       Booking[]
+  refreshTokens  RefreshToken[]
+}
+
+model RefreshToken {
+  id           String    @id @default(uuid(7)) @db.Uuid
+
+  // sha256 hex of the opaque token. The raw 32-byte base64url token exists
+  // only in the httpOnly cookie - if this table leaks, the attacker still
+  // holds nothing presentable. Unique so a hash lookup is the primary access
+  // path (and gets its index for free).
+  tokenHash    String    @unique
+
+  userId       String    @db.Uuid
+
+  // Hard upper bound on the token's life (7 days at issue time). Expired
+  // tokens must fail refresh even if never rotated.
+  expiresAt    DateTime
+
+  // Set the moment this token is rotated (or explicitly logged out). A
+  // revoked token that shows up again is the reuse/theft signal - 401, and
+  // (STRETCH) revoke the whole family.
+  revokedAt    DateTime?
+
+  // Rotation chain: which token replaced this one. Nullable self-relation -
+  // the newest token in a family has no successor yet. Reuse detection
+  // (STRETCH) follows this chain to revoke the entire family.
+  replacedById String?   @unique @db.Uuid
+
+  createdAt    DateTime  @default(now())
+
+  user         User          @relation(fields: [userId], references: [id])
+  replacedBy   RefreshToken? @relation("RotationChain", fields: [replacedById], references: [id])
+  replaces     RefreshToken? @relation("RotationChain")
+
+  // Lookups by user (logout-everywhere, family revocation) should not seq-scan.
+  @@index([userId])
 }
 
 model Event {
