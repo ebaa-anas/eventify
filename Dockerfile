@@ -35,6 +35,7 @@ COPY package*.json ./
 RUN npm ci --omit=dev
 COPY --from=build /app/src ./src
 COPY --from=build /app/prisma.config.ts ./
+COPY start.sh ./
 USER node
 EXPOSE 3000
 CMD ["node", "src/server.ts"]
