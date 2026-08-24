@@ -10,6 +10,7 @@ import {
 } from "../schemas/events.schema.ts";
 import type { EventsQuery, CreateEventInput, UpdateEventInput } from "../schemas/events.schema.ts";
 import { eventRepository } from "../repositories/events.repository.ts";
+import { getEvent, listEvents, updateEvent } from "../services/events.service.ts";
 
 export const eventsRouter = Router();
 
@@ -17,14 +18,14 @@ export const eventsRouter = Router();
 eventsRouter.get("/events", validateQuery(eventsQuerySchema), async (req, res) => {
   const { page, limit, venue, from, to, sort } = req.validatedQuery as EventsQuery;
 
-  const [data, total] = await eventRepository.list({ page, limit, venue, from, to, sort });
+  const { data, total } = await listEvents({ page, limit, venue, from, to, sort });
 
   res.status(200).json({ data, page, limit, total });
 });
 
 // Public — event detail pages don't require login either.
 eventsRouter.get("/events/:id", async (req, res) => {
-  const event = await eventRepository.findById(req.params.id as string);
+  const event = await getEvent(req.params.id as string);
   if (!event) {
     res.status(404).json({ error: "Event not found" });
     return;
@@ -58,7 +59,7 @@ eventsRouter.patch(
     if (req.user!.role !== "ADMIN" && existing.organizerId !== req.user!.sub) {
       throw HttpError.forbidden("You do not own this event");
     }
-    const event = await eventRepository.update(req.params.id as string, req.body as UpdateEventInput);
+    const event = await updateEvent(req.params.id as string, req.body as UpdateEventInput);
     res.status(200).json(event);
   },
 );

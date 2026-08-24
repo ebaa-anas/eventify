@@ -1,10 +1,12 @@
 import { Prisma } from "../generated/prisma/client.ts";
 import { prisma } from "../infra/db.ts";
-import { HttpError } from "../errors/HttpError.ts";
+import { HttpError } from "../errors/HttpError.ts"; 
+import { emailQueue } from "../jobs/email.queue.ts";
+import { waitlistQueue } from "../jobs/waitlist.queue.ts";
 
 export async function createBooking(eventId: string, userId: string) {
   try {
-    return await prisma.$transaction(
+    const booking = await prisma.$transaction(
       async (tx) => {
         const event = await tx.event.findUnique({ where: { id: eventId } });
         if (!event) {
@@ -20,13 +22,15 @@ export async function createBooking(eventId: string, userId: string) {
         });
 
         if (existing?.status === "CONFIRMED") {
-          // let the unique constraint fire below -> mapped to 409
           throw Object.assign(new Error("duplicate"), { code: "P2002_MANUAL" });
         }
 
         if (existing?.status === "CANCELLED") {
           if (confirmedCount >= event.capacity) {
-            throw new HttpError(409, "Event is full");
+            return tx.booking.update({
+              where: { id: existing.id },
+              data: { status: "WAITLISTED" },
+            });
           }
           return tx.booking.update({
             where: { id: existing.id },
@@ -34,13 +38,14 @@ export async function createBooking(eventId: string, userId: string) {
           });
         }
 
-        // existing?.status === "WAITLISTED" or no existing row at all
         if (existing?.status === "WAITLISTED") {
-          return existing; // Session 5's job to promote — leave as is
+          return existing;
         }
 
         if (confirmedCount >= event.capacity) {
-          throw new HttpError(409, "Event is full");
+          return tx.booking.create({
+            data: { userId, eventId, status: "WAITLISTED" },
+          });
         }
 
         return tx.booking.create({
@@ -49,6 +54,13 @@ export async function createBooking(eventId: string, userId: string) {
       },
       { isolationLevel: Prisma.TransactionIsolationLevel.Serializable },
     );
+
+    // outside the transaction — never enqueue on data that might roll back
+    if (booking.status === "CONFIRMED") {
+      await emailQueue.add("confirmation", { bookingId: booking.id });
+    }
+
+    return booking;
   } catch (err) {
     if (
       (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2002") ||
@@ -79,8 +91,18 @@ export async function cancelBooking(id: string, userId: string) {
   if (booking.userId !== userId) {
     throw HttpError.forbidden("You do not own this booking");
   }
-  return prisma.booking.update({
+
+  const wasConfirmed = booking.status === "CONFIRMED";
+
+  const updated = await prisma.booking.update({
     where: { id },
     data: { status: "CANCELLED" },
   });
+
+  // a confirmed seat just opened up — try to promote someone from the waitlist
+  if (wasConfirmed) {
+    await waitlistQueue.add("waitlist-promote", { eventId: booking.eventId });
+  }
+
+  return updated;
 }
