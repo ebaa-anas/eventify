@@ -3,13 +3,13 @@ import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../src/generated/prisma/client.ts";
 import { hashPassword } from "../src/security/password.ts";
 
-const adapter = new PrismaPg({
-  user: "eventify",
-  password: "eventify",
-  host: "localhost",
-  port: 5433,
-  database: "eventify",
-});
+// reads DATABASE_URL from the environment - point it at Neon before
+// running this against production, at the local db otherwise
+const connectionString = process.env.DATABASE_URL;
+if (!connectionString) {
+  throw new Error("DATABASE_URL is not set");
+}
+const adapter = new PrismaPg({ connectionString });
 const prisma = new PrismaClient({ adapter });
 
 // Every seeded account shares this password, for easy local testing.
